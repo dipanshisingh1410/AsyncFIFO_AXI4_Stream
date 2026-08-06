@@ -1,0 +1,36 @@
+module wptr_full
+#(
+parameter WIDTH = 8,
+parameter DEPTH = 16,
+parameter ADDRESS = 4
+)
+( input       winc, wclk,wrst_n,
+  input      [ADDRESS:0] w_rptr,
+  output     fifo_full, 
+  output reg [ADDRESS-1:0] waddr,
+  output reg [ADDRESS:1] wptr,
+  
+);  
+
+wire [ADDRESS-1:0] wptr_temp; 
+wire [ADDRESS:0] w_rptr_binary; 
+
+wire [ADDRESS:0] msb_waddr; 
+
+binary_to_gray b2g(msb_waddr,wptr_temp);          // to send the gray code (5bits)
+flip_flop      ff(wclk,wrst_n,wptr_temp,wptr); 
+gray_to_binary g2b(w_rptr,w_rptr_binary);         // to decode the 5 bit binary
+
+assign fifo_full=(msb_waddr[ADDRESS]^w_rptr_binary[ADDRESS])&(~(msb_waddr[ADDRESS-1:0] ^ w_rptr_binary[ADDRESS-1:0]); 
+ 
+always@(posedge wclk or negedge wrst_n)begin 
+if(wrst_n)
+waddr <= {ADDRESS{1'b0}};
+wptr  <= {ADDRESS{1'b0}};
+else if(winc)
+msb_waddr<= msb_waddr+ 1'b1; 
+waddr    <= msb_waddr[ADDRESS-1:0] ; 
+
+end 
+
+endmodule 

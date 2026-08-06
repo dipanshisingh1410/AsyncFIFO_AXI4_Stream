@@ -1,0 +1,28 @@
+module rptr_empty
+#(
+parameter WIDTH = 8,
+parameter DEPTH = 16,
+parameter ADDRESS = 4
+)(
+input rclk, rinc, rrst_n,
+input [ADDRESS:0] r_wptr, 
+output fifo_empty, 
+output reg [ADDRESS:0] rptr, 
+output reg [ADDRESS-1:0] raddr
+);  
+
+wire [ADDRESS:0] rptr_temp; 
+wire [ADDRESS:0] msb_raddr; 
+
+binary_to_gray b2g(msb_raddr,rptr_temp);          // to send the gray code (5bits)
+flip_flop      ff(wclk,rrst_n,rptr_temp[ADDRESS-1:0],rptr);    // passing it to a ff before sending to the synchronizer
+ 
+always@(posedge wclk or negedge wrst_n)begin 
+if(wrst_n)
+raddr <= {ADDRESS{1'b0}};
+rptr  <= {ADDRESS{1'b0},{1'b0}};
+else if(winc)
+msb_waddr<= msb_waddr+ 1'b1; 
+waddr    <= msb_waddr[ADDRESS-1:0] ; 
+
+end 

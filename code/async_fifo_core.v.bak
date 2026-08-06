@@ -1,0 +1,24 @@
+'define WIDTH 8
+'define DEPTH 16
+'define ADDRESS 4
+ 
+module async_fifo_core(
+input   wclk,rclk,
+input   wrst_n,rrst_n,
+input  [DEPTH-1:0] wdata,
+input   winc,rinc, 
+output reg  [DEPTH-1:0] rdata,
+output reg  fifo_full,fifo_empty); 
+
+wire wen; 
+wire [ADDRESS-1:0] waddr, raddr; 
+wire [ADDRESS-1:0] w_rptr,r_wptr;  
+wire [ADDRESS-1:0] wptr, rptr; 
+
+fifomem FIFO(.wdata(wdata), .wen(wclken), .wclk(wclk), .waddr(waddr),
+             .raddr(raddr), .rdata(rdata));  
+
+wptr_empty( .winc(winc), .wclk(wclk), .wrst_n(wrst_n), .w_rptr(w_rptr),
+            .fifo_full(fifo_full), .waddr(waddr), .wptr(wptr) ); 
+
+endmodule 
