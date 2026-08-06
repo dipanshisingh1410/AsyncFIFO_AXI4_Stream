@@ -82,8 +82,8 @@ task slave;
 begin 
   if(!fifo_empty) 
   rinc <= 1'b1; 
-  else
-  rinc <= 1'b0 ; $display("FIFO EMPTY"); 
+  else begin 
+  rinc <= 1'b0 ; $display("FIFO EMPTY"); end 
 end 
 endtask 
 //----------------------------------------------------------------
@@ -122,6 +122,7 @@ m_valid = 1'b0 ;
   $display("ONLY READ UNTIL FIFO_EMPTY"); 
   wait(fifo_empty); 
   
+repeat (5) @(posedge rclk);
   
 $finish; 
 end 
